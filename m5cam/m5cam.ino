@@ -34,8 +34,8 @@
 #define CONFIG_RESET 15
 #define CONFIG_XCLK_FREQ 20000000
 #define CAMERA_PIXEL_FORMAT CAMERA_PF_JPEG
-#define CAMERA_FRAME_SIZE CAMERA_FS_SVGA
-#define CAMERA_LED_GPIO 16
+#define CAMERA_FRAME_SIZE CAMERA_FS_QVGA
+#define CAMERA_LED_GPIO 17
 
 
 #include <WiFi.h>
@@ -46,6 +46,10 @@
 
 #include <SoftwareSerial.h>
 
+#define RXD2 12
+#define TXD2 16   // Instead of LED
+
+IPAddress apIP(192, 168, 4, 1);
 WiFiServer server(80);
 
 void serve()
@@ -121,15 +125,17 @@ bool video_running = false;
 int udp_server = -1;
 struct sockaddr_in destination;
 
+SoftwareSerial SWSeral2(RXD2, TXD2);
 
 void setup() {
   esp_log_level_set("camera", ESP_LOG_DEBUG);
   Serial.begin(115200);
+  SWSeral2.begin(9600);
   esp_err_t err;
 
   ESP_ERROR_CHECK(gpio_install_isr_service(0));
-  pinMode(CAMERA_LED_GPIO, OUTPUT);
-  digitalWrite(CAMERA_LED_GPIO, LOW);
+  //pinMode(CAMERA_LED_GPIO, OUTPUT);
+  //digitalWrite(CAMERA_LED_GPIO, LOW);
   Serial.println("Camera LED init.");
   
   WiFi.disconnect(true);
@@ -187,15 +193,28 @@ void setup() {
   Serial.println("Camera init.");
 
   ESP_LOGI("Starting WiFi AP m5cam");
-  WiFi.softAP("m5cam");
+
+  WiFi.mode(WIFI_AP);
+  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+  WiFi.softAP("TankRobot-192.168.4.1");
 
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
   server.begin();
+
+  
 }
 
-
+unsigned long previousMillis = 0;
 void loop() {
   serve();
+
+  unsigned long currentMillis = millis();
+
+  if (currentMillis - previousMillis >= 100) {
+    // save the last time you blinked the LED
+    previousMillis = currentMillis;
+    SWSeral2.println("ESP32 hello!");
+  }
 }
