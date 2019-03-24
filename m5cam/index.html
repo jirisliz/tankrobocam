@@ -14,7 +14,7 @@
 		
 		.header {
 			color: #aaaaaa;
-			 font-size: x-large;
+			font-size: x-large;
 		}
 		
 		.button {
@@ -55,14 +55,14 @@
 		}
 		</style>
 	</head>
-	<body scroll="no" style="overflow: hidden; height:100vh;">
+	<body scroll="no">
 		<div id="container" style='cursor: default;'></div>
 		<div id="info">
-			<div><span id="header1" class=header>Robot drawer control</span></div>
-			<div><span id="result"></span></div>
-			<div>
-				<img id='a' src='/camera' onload='this.style.display="initial"; var b = document.getElementById("b"); b.style.display="none"; b.src="camera?"+Date.now(); '>
-				<img id='b' style='display: none' src='/camera' onload='this.style.display="initial"; var a = document.getElementById("a"); a.style.display="none"; a.src="camera?"+Date.now(); '>
+			<div style="position:fixed; top:2%; color:white;"><span id="header1" class=header>Robot drawer control</span></div>
+			<div style="position:fixed; top:10%; color:white;"><span id="result"></span></div>
+			<div style="position:fixed; top:16%; color:white;">
+				<img id='a' src='/camera' onload='this.style.display="initial"; var b = document.getElementById("b"); b.style.display="none"; b.src="camera?"+Date.now();'>
+				<img id='b' style='display: none' src='/camera' onload='this.style.display="initial"; var a = document.getElementById("a"); a.style.display="none"; a.src="camera?"+Date.now();'>
 			</div>
 		</div> 
 		<script src="virtualjoystick.js"></script>
