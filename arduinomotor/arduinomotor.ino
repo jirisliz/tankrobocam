@@ -14,45 +14,65 @@ String cmd;
 
 void loop()
 {
-  bool dataReceived = false;
   while (Serial.available()) {
     char c = Serial.read();
     cmd += c;
-    dataReceived = true;
+    if (c == '\n')
+    {
+      parseCmd(cmd);
+      cmd = "";
+    }
   }
-  if (dataReceived)
-  {
-    parseCmd(cmd);
-    cmd = "";
-  }
+
 }
 
+/**
+   Parses and executes command in form <command>-<value>#
+*/
 void parseCmd(String cmd)
 {
-  if (cmd.startsWith("LF"))
+  String strCmd;
+  String strValue;
+  if(cmd.indexOf("-") > 0)
   {
-    leftMotorForward(100);
-    Serial.print(cmd);
+    strCmd = cmd.substring(0, cmd.indexOf("-"));
+    strValue = cmd.substring(cmd.indexOf("-") + 1, cmd.indexOf("\n"));
   }
-  if (cmd.startsWith("LB"))
+  else if(cmd.indexOf("\n") > 0)
   {
-    leftMotorBackward(100);
-    Serial.print(cmd);
+    strCmd = cmd.substring(0, cmd.indexOf("#"));
   }
-  if (cmd.startsWith("RF"))
-  {
-    rightMotorForward(100);
+  else return;
+  
+  Serial.println("strCmd: " + strCmd);
+  Serial.println("strValue: " + strValue);
+
+  
+    if (strCmd.indexOf("LF") >= 0)
+    {
+    leftMotorForward(strValue.toInt());
     Serial.print(cmd);
-  }
-  if (cmd.startsWith("RB"))
-  {
-    rightMotorBackward(100);
+    }
+    if (strCmd.indexOf("LB") >= 0)
+    {
+    leftMotorBackward(strValue.toInt());
     Serial.print(cmd);
-  }
-  if (cmd.startsWith("stop"))
-  {
+    }
+    if (strCmd.indexOf("RF") >= 0)
+    {
+    rightMotorForward(strValue.toInt());
+    Serial.print(cmd);
+    }
+    if (strCmd.indexOf("RB") >= 0)
+    {
+    rightMotorBackward(strValue.toInt());
+    Serial.print(cmd);
+    }
+    if (strCmd.indexOf("stop") >= 0)
+    {
     motorsStop();
     Serial.print(cmd);
-  }
+    }
   
+
 }
