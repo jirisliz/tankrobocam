@@ -4,13 +4,55 @@
 
 void setup()
 {
- Serial.begin(9600); //This pipes to the serial monitor
- Serial1.begin(9600);
+  Serial.begin(9600); //This pipes to the serial monitor
+  Serial1.begin(9600);
+
+  motorsInit();
 }
+
+String cmd;
 
 void loop()
 {
-  while (Serial1.available()) {
-    Serial.print(char(Serial1.read()));
+  bool dataReceived = false;
+  while (Serial.available()) {
+    char c = Serial.read();
+    cmd += c;
+    dataReceived = true;
   }
+  if (dataReceived)
+  {
+    parseCmd(cmd);
+    cmd = "";
+  }
+}
+
+void parseCmd(String cmd)
+{
+  if (cmd.startsWith("LF"))
+  {
+    leftMotorForward(100);
+    Serial.print(cmd);
+  }
+  if (cmd.startsWith("LB"))
+  {
+    leftMotorBackward(100);
+    Serial.print(cmd);
+  }
+  if (cmd.startsWith("RF"))
+  {
+    rightMotorForward(100);
+    Serial.print(cmd);
+  }
+  if (cmd.startsWith("RB"))
+  {
+    rightMotorBackward(100);
+    Serial.print(cmd);
+  }
+  if (cmd.startsWith("stop"))
+  {
+    motorsStop();
+    Serial.print(cmd);
+  }
+  
 }
