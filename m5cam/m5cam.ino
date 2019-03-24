@@ -43,6 +43,7 @@
 #include <lwip/err.h>
 #include <lwip/sockets.h>
 #include "camera.h"
+#include "canvas_htm.h"
 
 #include <SoftwareSerial.h>
 
@@ -72,10 +73,7 @@ void serve()
             client.println("HTTP/1.1 200 OK");
             client.println("Content-type:text/html");
             client.println();
-            client.print(
-              "<style>body{margin: 0}\nimg{height: 100%; width: auto}</style>"
-              "<img id='a' src='/camera' onload='this.style.display=\"initial\"; var b = document.getElementById(\"b\"); b.style.display=\"none\"; b.src=\"camera?\"+Date.now(); '>"
-              "<img id='b' style='display: none' src='/camera' onload='this.style.display=\"initial\"; var a = document.getElementById(\"a\"); a.style.display=\"none\"; a.src=\"camera?\"+Date.now(); '>");
+            client.print(canvas_htm);
             client.println();
             break;
           } 
