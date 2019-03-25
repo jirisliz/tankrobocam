@@ -53,6 +53,13 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "			-webkit-user-select	: none;\n"\
 "			-moz-user-select	: none;\n"\
 "		}\n"\
+"        .rotate180 {\n"\
+"            -webkit-transform: rotate(180deg);\n"\
+"            -moz-transform: rotate(180deg);\n"\
+"            -o-transform: rotate(180deg);\n"\
+"            -ms-transform: rotate(180deg);\n"\
+"            transform: rotate(180deg);\n"\
+"        }\n"\
 "		</style>\n"\
 "	</head>\n"\
 "	<body scroll=\"no\">\n"\
@@ -61,8 +68,8 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "			<div style=\"position:fixed; top:2%; color:white;\"><span id=\"header1\" class=header>Robot drawer control</span></div>\n"\
 "			<div style=\"position:fixed; top:10%; color:white;\"><span id=\"result\"></span></div>\n"\
 "			<div style=\"position:fixed; top:16%; color:white;\">\n"\
-"				<img id='a' src='/camera' onload='this.style.display=\"initial\"; var b = document.getElementById(\"b\"); b.style.display=\"none\"; b.src=\"camera?\"+Date.now();'>\n"\
-"				<img id='b' style='display: none' src='/camera' onload='this.style.display=\"initial\"; var a = document.getElementById(\"a\"); a.style.display=\"none\"; a.src=\"camera?\"+Date.now();'>\n"\
+"				<img id='a' src='/camera' class=\"rotate180\" onload='this.style.display=\"initial\"; var b = document.getElementById(\"b\"); b.style.display=\"none\"; b.src=\"camera?\"+Date.now();'>\n"\
+"				<img id='b' class=\"rotate180\" style='display: none' src='/camera' onload='this.style.display=\"initial\"; var a = document.getElementById(\"a\"); a.style.display=\"none\"; a.src=\"camera?\"+Date.now();'>\n"\
 "			</div>\n"\
 "		</div> \n"\
 "		<script src=\"virtualjoystick.js\"></script>\n"\
