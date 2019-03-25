@@ -12,11 +12,6 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "			color: #ffffff;\n"\
 "		}\n"\
 "		\n"\
-"		.header {\n"\
-"			color: #aaaaaa;\n"\
-"			font-size: x-large;\n"\
-"		}\n"\
-"		\n"\
 "		.button {\n"\
 "		  width: 50%;\n"\
 "		  background-color: Gray;\n"\
@@ -59,23 +54,17 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "            -o-transform: rotate(180deg);\n"\
 "            -ms-transform: rotate(180deg);\n"\
 "            transform: rotate(180deg);\n"\
-"            width:auto;\n"\
-"            max-width:100%;\n"\
-"            height:auto;\n"\
+"            width:100%;\n"\
+"            height:100%;\n"\
+"			object-fit: contain;\n"\
+"			object-position: right bottom;\n"\
 "        }\n"\
+"		img {\n"\
+"		  pointer-events: none;\n"\
+"		}\n"\
 "		</style>\n"\
 "	</head>\n"\
 "	<body scroll=\"no\">\n"\
-"		<div id=\"container\" style='cursor: default;'></div>\n"\
-"		<div id=\"info\">\n"\
-"			<div style=\"position:fixed; top:2%; color:white;\"><span id=\"header1\" class=header>Robot drawer control</span></div>\n"\
-"			<div style=\"position:fixed; top:10%; color:white;\"><span id=\"result\"></span></div>\n"\
-"			<div style=\"position:fixed; top:16%; color:white;\">\n"\
-"				<img id='a' src='/camera' class=\"rotate180\" onload='this.style.display=\"initial\"; var b = document.getElementById(\"b\"); b.style.display=\"none\"; b.src=\"camera?\"+Date.now();'>\n"\
-"				<img id='b' class=\"rotate180\" style='display: none;' src='/camera' onload='this.style.display=\"initial\"; var a = document.getElementById(\"a\"); a.style.display=\"none\"; a.src=\"camera?\"+Date.now();'>\n"\
-"			</div>\n"\
-"		</div> \n"\
-"		<script src=\"virtualjoystick.js\"></script>\n"\
 "		<script>\n"\
 "		var VirtualJoystick	= function(opts)\n"\
 "{\n"\
@@ -430,14 +419,13 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "	return exports;\n"\
 "}\n"\
 "\n"\
-"		\n"\
-"		\n"\
-"		\n"\
 "			console.log(\"touchscreen is\", VirtualJoystick.touchScreenAvailable() ? \"available\" : \"not available\");\n"\
 "	\n"\
 "			var joystick	= new VirtualJoystick({\n"\
 "				container	: document.getElementById('container'),\n"\
 "				mouseSupport	: true,\n"\
+"				limitStickTravel: true,\n"\
+"				stickRadius: 100\n"\
 "			});\n"\
 "			joystick.addEventListener('touchStart', function(){\n"\
 "				console.log('down')\n"\
@@ -449,8 +437,8 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "			setInterval(function(){\n"\
 "				var outputEl	= document.getElementById('result');\n"\
 "				outputEl.innerHTML	= '<b>Direction:</b> '\n"\
-"					+ ' dx:'+joystick.deltaX()\n"\
-"					+ ' dy:'+joystick.deltaY()\n"\
+"					+ ' dx:'+ Math.round(joystick.deltaX())\n"\
+"					+ ' dy:'+ Math.round(joystick.deltaY())\n"\
 "					+ (joystick.right()	? ' right'	 : '')\n"\
 "					+ (joystick.up()	? ' forward' : '')\n"\
 "					+ (joystick.left()	? ' left'	 : '')\n"\
@@ -458,5 +446,15 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "			}, 1/30 * 1000);\n"\
 "			\n"\
 "		</script>\n"\
+"		\n"\
+"		<div id=\"container\" style='cursor: default;'></div>\n"\
+"		<div id=\"info\">\n"\
+"			<div style=\"position:fixed; top:1%; color:white;\">\n"\
+"				<img id='a' src='/camera' class=\"rotate180\" onload='this.style.display=\"initial\"; var b = document.getElementById(\"b\"); b.style.display=\"none\"; b.src=\"camera?\"+Date.now();'>\n"\
+"				<img id='b' class=\"rotate180\" style='display: none;' src='/camera' onload='this.style.display=\"initial\"; var a = document.getElementById(\"a\"); a.style.display=\"none\"; a.src=\"camera?\"+Date.now();'>\n"\
+"			</div>\n"\
+"			<div style=\"position:fixed; top:1%; color:white;\"><span id=\"result\"></span></div>\n"\
+"		</div> \n"\
+"		\n"\
 "	</body>\n"\
 "</html>\n";

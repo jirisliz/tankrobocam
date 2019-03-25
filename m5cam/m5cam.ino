@@ -51,6 +51,9 @@
 #define TXD2 16   // Instead of LED
 
 IPAddress apIP(192, 168, 4, 1);
+
+const char* ssid     = "TankRobot-192.168.4.1";
+const char* pass     = "prahasucks";
 WiFiServer server(80);
 
 void serve()
@@ -194,7 +197,7 @@ void setup() {
 
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-  WiFi.softAP("TankRobot-192.168.4.1");
+  WiFi.softAP(ssid, pass);
 
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());

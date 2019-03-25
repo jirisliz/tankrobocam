@@ -12,11 +12,6 @@
 			color: #ffffff;
 		}
 		
-		.header {
-			color: #aaaaaa;
-			font-size: x-large;
-		}
-		
 		.button {
 		  width: 50%;
 		  background-color: Gray;
@@ -59,23 +54,17 @@
             -o-transform: rotate(180deg);
             -ms-transform: rotate(180deg);
             transform: rotate(180deg);
-            width:auto;
-            max-width:100%;
-            height:auto;
+            width:100%;
+            height:100%;
+			object-fit: contain;
+			object-position: right bottom;
         }
+		img {
+		  pointer-events: none;
+		}
 		</style>
 	</head>
 	<body scroll="no">
-		<div id="container" style='cursor: default;'></div>
-		<div id="info">
-			<div style="position:fixed; top:2%; color:white;"><span id="header1" class=header>Robot drawer control</span></div>
-			<div style="position:fixed; top:10%; color:white;"><span id="result"></span></div>
-			<div style="position:fixed; top:16%; color:white;">
-				<img id='a' src='/camera' class="rotate180" onload='this.style.display="initial"; var b = document.getElementById("b"); b.style.display="none"; b.src="camera?"+Date.now();'>
-				<img id='b' class="rotate180" style='display: none;' src='/camera' onload='this.style.display="initial"; var a = document.getElementById("a"); a.style.display="none"; a.src="camera?"+Date.now();'>
-			</div>
-		</div> 
-		<script src="virtualjoystick.js"></script>
 		<script>
 		var VirtualJoystick	= function(opts)
 {
@@ -430,14 +419,13 @@ VirtualJoystick.prototype._check3D = function()
 	return exports;
 }
 
-		
-		
-		
 			console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
 	
 			var joystick	= new VirtualJoystick({
 				container	: document.getElementById('container'),
 				mouseSupport	: true,
+				limitStickTravel: true,
+				stickRadius: 100
 			});
 			joystick.addEventListener('touchStart', function(){
 				console.log('down')
@@ -449,8 +437,8 @@ VirtualJoystick.prototype._check3D = function()
 			setInterval(function(){
 				var outputEl	= document.getElementById('result');
 				outputEl.innerHTML	= '<b>Direction:</b> '
-					+ ' dx:'+joystick.deltaX()
-					+ ' dy:'+joystick.deltaY()
+					+ ' dx:'+ Math.round(joystick.deltaX())
+					+ ' dy:'+ Math.round(joystick.deltaY())
 					+ (joystick.right()	? ' right'	 : '')
 					+ (joystick.up()	? ' forward' : '')
 					+ (joystick.left()	? ' left'	 : '')
@@ -458,5 +446,15 @@ VirtualJoystick.prototype._check3D = function()
 			}, 1/30 * 1000);
 			
 		</script>
+		
+		<div id="container" style='cursor: default;'></div>
+		<div id="info">
+			<div style="position:fixed; top:1%; color:white;">
+				<img id='a' src='/camera' class="rotate180" onload='this.style.display="initial"; var b = document.getElementById("b"); b.style.display="none"; b.src="camera?"+Date.now();'>
+				<img id='b' class="rotate180" style='display: none;' src='/camera' onload='this.style.display="initial"; var a = document.getElementById("a"); a.style.display="none"; a.src="camera?"+Date.now();'>
+			</div>
+			<div style="position:fixed; top:1%; color:white;"><span id="result"></span></div>
+		</div> 
+		
 	</body>
 </html>
