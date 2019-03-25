@@ -59,6 +59,9 @@
             -o-transform: rotate(180deg);
             -ms-transform: rotate(180deg);
             transform: rotate(180deg);
+            width:auto;
+            max-width:100%;
+            height:auto;
         }
 		</style>
 	</head>
@@ -69,7 +72,7 @@
 			<div style="position:fixed; top:10%; color:white;"><span id="result"></span></div>
 			<div style="position:fixed; top:16%; color:white;">
 				<img id='a' src='/camera' class="rotate180" onload='this.style.display="initial"; var b = document.getElementById("b"); b.style.display="none"; b.src="camera?"+Date.now();'>
-				<img id='b' class="rotate180" style='display: none' src='/camera' onload='this.style.display="initial"; var a = document.getElementById("a"); a.style.display="none"; a.src="camera?"+Date.now();'>
+				<img id='b' class="rotate180" style='display: none;' src='/camera' onload='this.style.display="initial"; var a = document.getElementById("a"); a.style.display="none"; a.src="camera?"+Date.now();'>
 			</div>
 		</div> 
 		<script src="virtualjoystick.js"></script>
