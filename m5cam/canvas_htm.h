@@ -419,6 +419,50 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "	return exports;\n"\
 "}\n"\
 "\n"\
+"			var lastPacket = \"\";\n"\
+"\n"\
+"			var connection = new WebSocket('ws://' + location.hostname + ':443/', ['arduino']);\n"\
+"			connection.onopen = function() {\n"\
+"				connection.send('Connect ' + new Date());\n"\
+"			};\n"\
+"			connection.onerror = function(error) {\n"\
+"				console.log('WebSocket Error ', error);\n"\
+"			};\n"\
+"			connection.onmessage = function(e) {\n"\
+"				console.log('Server: ', e.data);\n"\
+"			};\n"\
+"\n"\
+"			function sendVals() {\n"\
+"				var ret = \"\";\n"\
+"				var dx = 2.55 * joystick.deltaX();\n"\
+"				var dy = 2.55 * joystick.deltaY();\n"\
+"				var rightMSpd = dx - dy;\n"\
+"				var leftMSpd = dx + dy;\n"\
+"				var rightMCmd = \"\";\n"\
+"				var leftMCmd = \"\";\n"\
+"				if(rightMSpd >= 0) {\n"\
+"					rightMCmd = \"LF-\";\n"\
+"				} \n"\
+"				else {\n"\
+"					rightMSpd = -rightMSpd;\n"\
+"					rightMCmd = \"LB-\";\n"\
+"				}\n"\
+"				rightMCmd = rightMCmd + rightMSpd.toString(10) + \"#\";\n"\
+"				if(leftMSpd >= 0) {\n"\
+"					leftMCmd = \"LF-\";\n"\
+"				} \n"\
+"				else {\n"\
+"					leftMSpd = -leftMSpd;\n"\
+"					leftMCmd = \"LB-\";\n"\
+"				}\n"\
+"				leftMCmd = leftMCmd + leftMSpd.toString(10) + \"#\";\n"\
+"				ret = rightMCmd + leftMCmd;\n"\
+"				if(ret.localeCompare(lastPacket)!=0) {\n"\
+"					connection.send(ret);\n"\
+"					lastPacket = ret;\n"\
+"				}\n"\
+"			}\n"\
+"			\n"\
 "			console.log(\"touchscreen is\", VirtualJoystick.touchScreenAvailable() ? \"available\" : \"not available\");\n"\
 "	\n"\
 "			var joystick	= new VirtualJoystick({\n"\
@@ -443,6 +487,7 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "					+ (joystick.up()	? ' forward' : '')\n"\
 "					+ (joystick.left()	? ' left'	 : '')\n"\
 "					+ (joystick.down()	? ' backward': '')	\n"\
+"				sendVals();\n"\
 "			}, 1/30 * 1000);\n"\
 "			\n"\
 "		</script>\n"\

@@ -34,7 +34,7 @@
 #define CONFIG_RESET 15
 #define CONFIG_XCLK_FREQ 20000000
 #define CAMERA_PIXEL_FORMAT CAMERA_PF_JPEG
-#define CAMERA_FRAME_SIZE CAMERA_FS_VGA
+#define CAMERA_FRAME_SIZE CAMERA_FS_QVGA
 #define CAMERA_LED_GPIO 17
 
 
@@ -44,7 +44,7 @@
 #include <lwip/sockets.h>
 #include "camera.h"
 #include "canvas_htm.h"
-
+#include <WebSocketsServer.h>
 #include <SoftwareSerial.h>
 
 #define RXD2 12
@@ -54,7 +54,39 @@ IPAddress apIP(192, 168, 4, 1);
 
 const char* ssid     = "TankRobot-192.168.4.1";
 const char* pass     = "prahasucks";
+
+WebSocketsServer webSocket = WebSocketsServer(443);
 WiFiServer server(80);
+
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
+
+  switch (type) {
+    case WStype_DISCONNECTED:
+      Serial.printf("[%u] Disconnected!\n", num);
+      // Stop motors
+      
+      break;
+    case WStype_CONNECTED: {
+        IPAddress ip = webSocket.remoteIP(num);
+        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+
+        // send message to client
+        webSocket.sendTXT(num, "Connected");
+      }
+      break;
+    case WStype_TEXT:
+      Serial.printf("[%u] get Text: %s\n", num, payload);
+
+      break;
+    case WStype_ERROR:
+    case WStype_FRAGMENT_TEXT_START:
+    case WStype_FRAGMENT_BIN_START:
+    case WStype_FRAGMENT:
+    case WStype_FRAGMENT_FIN:
+      break;
+  }
+
+}
 
 void serve()
 {
@@ -65,6 +97,7 @@ void serve()
     String currentLine = "";
     while (client.connected()) 
     {
+      webSocket.loop();
       if (client.available()) 
       {
         char c = client.read();
@@ -199,12 +232,16 @@ void setup() {
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
   WiFi.softAP(ssid, pass);
 
+  webSocket.begin();
+  webSocket.onEvent(webSocketEvent);
+  Serial.println("Websockets server started");
+
   Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+  Serial.println(WiFi.softAPIP());
 
   server.begin();
 
-  
+
 }
 
 unsigned long previousMillis = 0;

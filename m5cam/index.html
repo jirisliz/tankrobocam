@@ -419,6 +419,50 @@ VirtualJoystick.prototype._check3D = function()
 	return exports;
 }
 
+			var lastPacket = "";
+
+			var connection = new WebSocket('ws://' + location.hostname + ':443/', ['arduino']);
+			connection.onopen = function() {
+				connection.send('Connect ' + new Date());
+			};
+			connection.onerror = function(error) {
+				console.log('WebSocket Error ', error);
+			};
+			connection.onmessage = function(e) {
+				console.log('Server: ', e.data);
+			};
+
+			function sendVals() {
+				var ret = "";
+				var dx = Math.round(-2.55 * joystick.deltaX());
+				var dy = Math.round(-2.55 * joystick.deltaY());
+				var rightMSpd = dx - dy;
+				var leftMSpd = dx + dy;
+				var rightMCmd = "";
+				var leftMCmd = "";
+				if(rightMSpd >= 0) {
+					rightMCmd = "LF-";
+				} 
+				else {
+					rightMSpd = -rightMSpd;
+					rightMCmd = "LB-";
+				}
+				rightMCmd = rightMCmd + rightMSpd.toString(10) + "#";
+				if(leftMSpd >= 0) {
+					leftMCmd = "LF-";
+				} 
+				else {
+					leftMSpd = -leftMSpd;
+					leftMCmd = "LB-";
+				}
+				leftMCmd = leftMCmd + leftMSpd.toString(10) + "#";
+				ret = rightMCmd + leftMCmd;
+				if(ret.localeCompare(lastPacket)!=0) {
+					connection.send(ret);
+					lastPacket = ret;
+				}
+			}
+			
 			console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
 	
 			var joystick	= new VirtualJoystick({
@@ -443,6 +487,7 @@ VirtualJoystick.prototype._check3D = function()
 					+ (joystick.up()	? ' forward' : '')
 					+ (joystick.left()	? ' left'	 : '')
 					+ (joystick.down()	? ' backward': '')	
+				sendVals();
 			}, 1/30 * 1000);
 			
 		</script>
