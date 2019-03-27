@@ -420,7 +420,8 @@ VirtualJoystick.prototype._check3D = function()
 }
 
 			var lastPacket = "";
-
+            
+            /*
 			var connection = new WebSocket('ws://' + location.hostname + ':443/', ['arduino']);
 			connection.onopen = function() {
 				connection.send('Connect ' + new Date());
@@ -431,6 +432,7 @@ VirtualJoystick.prototype._check3D = function()
 			connection.onmessage = function(e) {
 				console.log('Server: ', e.data);
 			};
+            */
 
 			function sendVals() {
 				var ret = "";
@@ -483,6 +485,8 @@ VirtualJoystick.prototype._check3D = function()
 				outputEl.innerHTML	= '<b>Direction:</b> '
 					+ ' dx:'+ Math.round(joystick.deltaX())
 					+ ' dy:'+ Math.round(joystick.deltaY())
+                    + ' spd:' + Math.sqrt(joystick.deltaX()*joystick.deltaX()+joystick.deltaY()*joystick.deltaY())
+                    + ' angle:' + (-(Math.atan2(joystick.deltaY(),joystick.deltaX())+Math.PI/2)*180/Math.PI)
 					+ (joystick.right()	? ' right'	 : '')
 					+ (joystick.up()	? ' forward' : '')
 					+ (joystick.left()	? ' left'	 : '')

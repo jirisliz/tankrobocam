@@ -420,7 +420,8 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "}\n"\
 "\n"\
 "			var lastPacket = \"\";\n"\
-"\n"\
+"            \n"\
+"            /*\n"\
 "			var connection = new WebSocket('ws://' + location.hostname + ':443/', ['arduino']);\n"\
 "			connection.onopen = function() {\n"\
 "				connection.send('Connect ' + new Date());\n"\
@@ -431,11 +432,12 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "			connection.onmessage = function(e) {\n"\
 "				console.log('Server: ', e.data);\n"\
 "			};\n"\
+"            */\n"\
 "\n"\
 "			function sendVals() {\n"\
 "				var ret = \"\";\n"\
-"				var dx = 2.55 * joystick.deltaX();\n"\
-"				var dy = 2.55 * joystick.deltaY();\n"\
+"				var dx = Math.round(-2.55 * joystick.deltaX());\n"\
+"				var dy = Math.round(-2.55 * joystick.deltaY());\n"\
 "				var rightMSpd = dx - dy;\n"\
 "				var leftMSpd = dx + dy;\n"\
 "				var rightMCmd = \"\";\n"\
@@ -483,6 +485,8 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "				outputEl.innerHTML	= '<b>Direction:</b> '\n"\
 "					+ ' dx:'+ Math.round(joystick.deltaX())\n"\
 "					+ ' dy:'+ Math.round(joystick.deltaY())\n"\
+"                    + ' spd:' + Math.sqrt(joystick.deltaX()*joystick.deltaX()+joystick.deltaY()*joystick.deltaY())\n"\
+"                    + ' angle:' + (-(Math.atan2(joystick.deltaY(),joystick.deltaX())+Math.PI/2)*180/Math.PI)\n"\
 "					+ (joystick.right()	? ' right'	 : '')\n"\
 "					+ (joystick.up()	? ' forward' : '')\n"\
 "					+ (joystick.left()	? ' left'	 : '')\n"\
