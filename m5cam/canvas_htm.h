@@ -434,35 +434,66 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "			};\n"\
 "            */\n"\
 "\n"\
-"			function sendVals() {\n"\
+"			function sendVals(speed, angle) {\n"\
 "				var ret = \"\";\n"\
-"				var dx = Math.round(-2.55 * joystick.deltaX());\n"\
-"				var dy = Math.round(-2.55 * joystick.deltaY());\n"\
-"				var rightMSpd = dx - dy;\n"\
-"				var leftMSpd = dx + dy;\n"\
-"				var rightMCmd = \"\";\n"\
-"				var leftMCmd = \"\";\n"\
-"				if(rightMSpd >= 0) {\n"\
-"					rightMCmd = \"LF-\";\n"\
-"				} \n"\
-"				else {\n"\
-"					rightMSpd = -rightMSpd;\n"\
-"					rightMCmd = \"LB-\";\n"\
+"				var dx = Math.round(joystick.deltaX());\n"\
+"				var dy = -Math.round(joystick.deltaY());\n"\
+"                var rightMSpd = 0;\n"\
+"                var leftMSpd = 0;\n"\
+"                \n"\
+"                var rightMCmd = \"\";\n"\
+"                var leftMCmd = \"\";\n"\
+"				\n"\
+"				if(dx == 0 && dy == 0) {\n"\
+"					ret = \"stop#\";\n"\
 "				}\n"\
-"				rightMCmd = rightMCmd + rightMSpd.toString(10) + \"#\";\n"\
-"				if(leftMSpd >= 0) {\n"\
-"					leftMCmd = \"LF-\";\n"\
-"				} \n"\
-"				else {\n"\
-"					leftMSpd = -leftMSpd;\n"\
-"					leftMCmd = \"LB-\";\n"\
-"				}\n"\
-"				leftMCmd = leftMCmd + leftMSpd.toString(10) + \"#\";\n"\
-"				ret = rightMCmd + leftMCmd;\n"\
+"                else {\n"\
+"					// Forward\n"\
+"					if(dy >= 0) {\n"\
+"						// Right\n"\
+"						if(dx >= 0) {\n"\
+"							leftMSpd = Math.round(speed*2.55);\n"\
+"							rightMSpd = Math.round((speed - (2*angle*speed/90))*2.55);\n"\
+"							leftMCmd = \"LF-\" + leftMSpd;\n"\
+"							if(rightMSpd >= 0)rightMCmd = \"RF-\" + rightMSpd;\n"\
+"							if(rightMSpd < 0)rightMCmd = \"RB-\" + -rightMSpd;\n"\
+"						}\n"\
+"						// Left\n"\
+"						else {\n"\
+"							rightMSpd = Math.round(speed*2.55);\n"\
+"							leftMSpd = Math.round((speed - (2*angle*speed/90))*2.55);\n"\
+"							rightMCmd = \"RF-\" + rightMSpd;\n"\
+"							if(leftMSpd >= 0)leftMCmd = \"LF-\" + leftMSpd;\n"\
+"							if(leftMSpd < 0)leftMCmd = \"LB-\" + -leftMSpd;\n"\
+"						}\n"\
+"					}\n"\
+"					// Backward\n"\
+"					if(dy < 0) {\n"\
+"						// Right\n"\
+"						if(dx < 0) {\n"\
+"							leftMSpd = Math.round(speed*2.55);\n"\
+"							rightMSpd = Math.round((speed - (2*angle*speed/90))*2.55);\n"\
+"							leftMCmd = \"LB-\" + leftMSpd;\n"\
+"							if(rightMSpd >= 0)rightMCmd = \"RB-\" + rightMSpd;\n"\
+"							if(rightMSpd < 0)rightMCmd = \"RF-\" + -rightMSpd;\n"\
+"						}\n"\
+"						// Left\n"\
+"						else {\n"\
+"							rightMSpd = Math.round(speed*2.55);\n"\
+"							leftMSpd = Math.round((speed - (2*angle*speed/90))*2.55);\n"\
+"							rightMCmd = \"RB-\" + rightMSpd;\n"\
+"							if(leftMSpd >= 0)leftMCmd = \"LB-\" + leftMSpd;\n"\
+"							if(leftMSpd < 0)leftMCmd = \"LF-\" + -leftMSpd;\n"\
+"						}\n"\
+"					}\n"\
+"					ret = rightMCmd + \"#\" + leftMCmd + \"#\";\n"\
+"                }\n"\
+"				\n"\
 "				if(ret.localeCompare(lastPacket)!=0) {\n"\
-"					connection.send(ret);\n"\
+"					//connection.send(ret);\n"\
 "					lastPacket = ret;\n"\
 "				}\n"\
+"                return ret;\n"\
 "			}\n"\
 "			\n"\
 "			console.log(\"touchscreen is\", VirtualJoystick.touchScreenAvailable() ? \"available\" : \"not available\");\n"\
@@ -482,16 +513,25 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "\n"\
 "			setInterval(function(){\n"\
 "				var outputEl	= document.getElementById('result');\n"\
+"                // Evaluate speed in %\n"\
+"                var speed = Math.round(Math.sqrt(joystick.deltaX()*joystick.deltaX()+joystick.deltaY()*joystick.deltaY()));\n"\
+"                // Evaluate angle in every quadrant 0-90deg\n"\
+"                var angle = Math.round((-(Math.atan2(joystick.deltaY(),joystick.deltaX()))*180/Math.PI));\n"\
+"                if(angle < 0)angle = -angle;\n"\
+"                if(angle >= 0 && angle <= 90)angle = -(angle - 90);\n"\
+"                if(angle > 90 && angle <= 180)angle -= 90;\n"\
+"                \n"\
 "				outputEl.innerHTML	= '<b>Direction:</b> '\n"\
 "					+ ' dx:'+ Math.round(joystick.deltaX())\n"\
 "					+ ' dy:'+ Math.round(joystick.deltaY())\n"\
-"                    + ' spd:' + Math.sqrt(joystick.deltaX()*joystick.deltaX()+joystick.deltaY()*joystick.deltaY())\n"\
-"                    + ' angle:' + (-(Math.atan2(joystick.deltaY(),joystick.deltaX())+Math.PI/2)*180/Math.PI)\n"\
-"					+ (joystick.right()	? ' right'	 : '')\n"\
-"					+ (joystick.up()	? ' forward' : '')\n"\
-"					+ (joystick.left()	? ' left'	 : '')\n"\
-"					+ (joystick.down()	? ' backward': '')	\n"\
-"				sendVals();\n"\
+"					+ (joystick.right()	? ' Right'	 : '')\n"\
+"					+ (joystick.up()	? ' Forward' : '')\n"\
+"					+ (joystick.left()	? ' Left'	 : '')\n"\
+"					+ (joystick.down()	? ' Backward': '')	\n"\
+"                    + ' <b>Angle:</b> ' + angle + \"°\"\n"\
+"                    + ' <b>Speed:</b> ' + speed + \"%\"\n"\
+"                    + '<br> <b>Motors cmd:</b> ' + sendVals(speed, angle)\n"\
+"				\n"\
 "			}, 1/30 * 1000);\n"\
 "			\n"\
 "		</script>\n"\

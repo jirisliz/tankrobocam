@@ -443,48 +443,52 @@ VirtualJoystick.prototype._check3D = function()
                 
                 var rightMCmd = "";
                 var leftMCmd = "";
-                
-                // Forward
-                if(dy >= 0) {
-                    // Right
-                    if(dx >= 0) {
-                        leftMSpd = Math.round(speed*2.55);
-                        rightMSpd = Math.round((speed - (2*angle*speed/90))*2.55);
-                        leftMCmd = "LF-" + leftMSpd;
-                        if(rightMSpd >= 0)rightMCmd = "RF-" + rightMSpd;
-                        if(rightMSpd < 0)rightMCmd = "RB-" + -rightMSpd;
-                    }
-                    // Left
-                    else {
-                        rightMSpd = Math.round(speed*2.55);
-                        leftMSpd = Math.round((speed - (2*angle*speed/90))*2.55);
-                        rightMCmd = "RF-" + rightMSpd;
-                        if(leftMSpd >= 0)leftMCmd = "LF-" + leftMSpd;
-                        if(leftMSpd < 0)leftMCmd = "LB-" + -leftMSpd;
-                    }
-                }
-                // Backward
-                if(dy < 0) {
-                    // Right
-                    if(dx < 0) {
-                        leftMSpd = Math.round(speed*2.55);
-                        rightMSpd = Math.round((speed - (2*angle*speed/90))*2.55);
-                        leftMCmd = "LB-" + leftMSpd;
-                        if(rightMSpd >= 0)rightMCmd = "RB-" + rightMSpd;
-                        if(rightMSpd < 0)rightMCmd = "RF-" + -rightMSpd;
-                    }
-                    // Left
-                    else {
-                        rightMSpd = Math.round(speed*2.55);
-                        leftMSpd = Math.round((speed - (2*angle*speed/90))*2.55);
-                        rightMCmd = "RB-" + rightMSpd;
-                        if(leftMSpd >= 0)leftMCmd = "LB-" + leftMSpd;
-                        if(leftMSpd < 0)leftMCmd = "LF-" + -leftMSpd;
-                    }
-                }
-                
 				
-				ret = rightMCmd + "#" + leftMCmd + "#";
+				if(dx == 0 && dy == 0) {
+					ret = "stop#";
+				}
+                else {
+					// Forward
+					if(dy >= 0) {
+						// Right
+						if(dx >= 0) {
+							leftMSpd = Math.round(speed*2.55);
+							rightMSpd = Math.round((speed - (2*angle*speed/90))*2.55);
+							leftMCmd = "LF-" + leftMSpd;
+							if(rightMSpd >= 0)rightMCmd = "RF-" + rightMSpd;
+							if(rightMSpd < 0)rightMCmd = "RB-" + -rightMSpd;
+						}
+						// Left
+						else {
+							rightMSpd = Math.round(speed*2.55);
+							leftMSpd = Math.round((speed - (2*angle*speed/90))*2.55);
+							rightMCmd = "RF-" + rightMSpd;
+							if(leftMSpd >= 0)leftMCmd = "LF-" + leftMSpd;
+							if(leftMSpd < 0)leftMCmd = "LB-" + -leftMSpd;
+						}
+					}
+					// Backward
+					if(dy < 0) {
+						// Right
+						if(dx < 0) {
+							leftMSpd = Math.round(speed*2.55);
+							rightMSpd = Math.round((speed - (2*angle*speed/90))*2.55);
+							leftMCmd = "LB-" + leftMSpd;
+							if(rightMSpd >= 0)rightMCmd = "RB-" + rightMSpd;
+							if(rightMSpd < 0)rightMCmd = "RF-" + -rightMSpd;
+						}
+						// Left
+						else {
+							rightMSpd = Math.round(speed*2.55);
+							leftMSpd = Math.round((speed - (2*angle*speed/90))*2.55);
+							rightMCmd = "RB-" + rightMSpd;
+							if(leftMSpd >= 0)leftMCmd = "LB-" + leftMSpd;
+							if(leftMSpd < 0)leftMCmd = "LF-" + -leftMSpd;
+						}
+					}
+					ret = rightMCmd + "#" + leftMCmd + "#";
+                }
+				
 				if(ret.localeCompare(lastPacket)!=0) {
 					//connection.send(ret);
 					lastPacket = ret;
