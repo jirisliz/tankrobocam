@@ -58,12 +58,20 @@ const char* pass     = "prahasucks";
 WebSocketsServer webSocket = WebSocketsServer(443);
 WiFiServer server(80);
 
+SoftwareSerial SWSeral2(RXD2, TXD2);
+
+void stopMotors()
+{
+  SWSeral2.printf("stop-#");
+}
+
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
 
   switch (type) {
     case WStype_DISCONNECTED:
       Serial.printf("[%u] Disconnected!\n", num);
       // Stop motors
+      stopMotors();
       
       break;
     case WStype_CONNECTED: {
@@ -75,7 +83,9 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       }
       break;
     case WStype_TEXT:
-      Serial.printf("[%u] get Text: %s\n", num, payload);
+      //Serial.printf("[%u] get Text: %s\n", num, payload);
+      Serial.printf("%s\n", payload);
+      SWSeral2.printf("%s\n", payload);
 
       break;
     case WStype_ERROR:
@@ -159,8 +169,6 @@ bool video_running = false;
 int udp_server = -1;
 struct sockaddr_in destination;
 
-SoftwareSerial SWSeral2(RXD2, TXD2);
-
 void setup() {
   esp_log_level_set("camera", ESP_LOG_DEBUG);
   Serial.begin(115200);
@@ -240,19 +248,11 @@ void setup() {
   Serial.println(WiFi.softAPIP());
 
   server.begin();
-
-
+  
+  stopMotors();
 }
 
 unsigned long previousMillis = 0;
 void loop() {
   serve();
-
-  unsigned long currentMillis = millis();
-
-  if (currentMillis - previousMillis >= 100) {
-    // save the last time you blinked the LED
-    previousMillis = currentMillis;
-    SWSeral2.println("ESP32 hello!");
-  }
 }

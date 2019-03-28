@@ -420,8 +420,7 @@ VirtualJoystick.prototype._check3D = function()
 }
 
 			var lastPacket = "";
-            
-            /*
+             ///*           
 			var connection = new WebSocket('ws://' + location.hostname + ':443/', ['arduino']);
 			connection.onopen = function() {
 				connection.send('Connect ' + new Date());
@@ -431,10 +430,13 @@ VirtualJoystick.prototype._check3D = function()
 			};
 			connection.onmessage = function(e) {
 				console.log('Server: ', e.data);
-			};
-            */
+			};   
+			//*/         
 
 			function sendVals(speed, angle) {
+				var maxSpeed = 200/100;
+				var minSpeed = 60;
+				if(speed < minSpeed)speed = minSpeed;
 				var ret = "";
 				var dx = Math.round(joystick.deltaX());
 				var dy = -Math.round(joystick.deltaY());
@@ -445,23 +447,23 @@ VirtualJoystick.prototype._check3D = function()
                 var leftMCmd = "";
 				
 				if(dx == 0 && dy == 0) {
-					ret = "stop#";
+					ret = "stop-#";
 				}
                 else {
 					// Forward
 					if(dy >= 0) {
 						// Right
 						if(dx >= 0) {
-							leftMSpd = Math.round(speed*2.55);
-							rightMSpd = Math.round((speed - (2*angle*speed/90))*2.55);
+							leftMSpd = Math.round(speed*maxSpeed);
+							rightMSpd = Math.round((speed - (2*angle*speed/90))*maxSpeed);
 							leftMCmd = "LF-" + leftMSpd;
 							if(rightMSpd >= 0)rightMCmd = "RF-" + rightMSpd;
 							if(rightMSpd < 0)rightMCmd = "RB-" + -rightMSpd;
 						}
 						// Left
 						else {
-							rightMSpd = Math.round(speed*2.55);
-							leftMSpd = Math.round((speed - (2*angle*speed/90))*2.55);
+							rightMSpd = Math.round(speed*maxSpeed);
+							leftMSpd = Math.round((speed - (2*angle*speed/90))*maxSpeed);
 							rightMCmd = "RF-" + rightMSpd;
 							if(leftMSpd >= 0)leftMCmd = "LF-" + leftMSpd;
 							if(leftMSpd < 0)leftMCmd = "LB-" + -leftMSpd;
@@ -471,16 +473,16 @@ VirtualJoystick.prototype._check3D = function()
 					if(dy < 0) {
 						// Right
 						if(dx < 0) {
-							leftMSpd = Math.round(speed*2.55);
-							rightMSpd = Math.round((speed - (2*angle*speed/90))*2.55);
+							leftMSpd = Math.round(speed*maxSpeed);
+							rightMSpd = Math.round((speed - (2*angle*speed/90))*maxSpeed);
 							leftMCmd = "LB-" + leftMSpd;
 							if(rightMSpd >= 0)rightMCmd = "RB-" + rightMSpd;
 							if(rightMSpd < 0)rightMCmd = "RF-" + -rightMSpd;
 						}
 						// Left
 						else {
-							rightMSpd = Math.round(speed*2.55);
-							leftMSpd = Math.round((speed - (2*angle*speed/90))*2.55);
+							rightMSpd = Math.round(speed*maxSpeed);
+							leftMSpd = Math.round((speed - (2*angle*speed/90))*maxSpeed);
 							rightMCmd = "RB-" + rightMSpd;
 							if(leftMSpd >= 0)leftMCmd = "LB-" + leftMSpd;
 							if(leftMSpd < 0)leftMCmd = "LF-" + -leftMSpd;
@@ -490,7 +492,7 @@ VirtualJoystick.prototype._check3D = function()
                 }
 				
 				if(ret.localeCompare(lastPacket)!=0) {
-					//connection.send(ret);
+					connection.send(ret);
 					lastPacket = ret;
 				}
                 return ret;

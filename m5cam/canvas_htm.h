@@ -420,8 +420,7 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "}\n"\
 "\n"\
 "			var lastPacket = \"\";\n"\
-"            \n"\
-"            /*\n"\
+"             ///*           \n"\
 "			var connection = new WebSocket('ws://' + location.hostname + ':443/', ['arduino']);\n"\
 "			connection.onopen = function() {\n"\
 "				connection.send('Connect ' + new Date());\n"\
@@ -431,10 +430,13 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "			};\n"\
 "			connection.onmessage = function(e) {\n"\
 "				console.log('Server: ', e.data);\n"\
-"			};\n"\
-"            */\n"\
+"			};   \n"\
+"			//*/         \n"\
 "\n"\
 "			function sendVals(speed, angle) {\n"\
+"				var maxSpeed = 200/100;\n"\
+"				var minSpeed = 60;\n"\
+"				if(speed < minSpeed)speed = minSpeed;\n"\
 "				var ret = \"\";\n"\
 "				var dx = Math.round(joystick.deltaX());\n"\
 "				var dy = -Math.round(joystick.deltaY());\n"\
@@ -445,23 +447,23 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "                var leftMCmd = \"\";\n"\
 "				\n"\
 "				if(dx == 0 && dy == 0) {\n"\
-"					ret = \"stop#\";\n"\
+"					ret = \"stop-#\";\n"\
 "				}\n"\
 "                else {\n"\
 "					// Forward\n"\
 "					if(dy >= 0) {\n"\
 "						// Right\n"\
 "						if(dx >= 0) {\n"\
-"							leftMSpd = Math.round(speed*2.55);\n"\
-"							rightMSpd = Math.round((speed - (2*angle*speed/90))*2.55);\n"\
+"							leftMSpd = Math.round(speed*maxSpeed);\n"\
+"							rightMSpd = Math.round((speed - (2*angle*speed/90))*maxSpeed);\n"\
 "							leftMCmd = \"LF-\" + leftMSpd;\n"\
 "							if(rightMSpd >= 0)rightMCmd = \"RF-\" + rightMSpd;\n"\
 "							if(rightMSpd < 0)rightMCmd = \"RB-\" + -rightMSpd;\n"\
 "						}\n"\
 "						// Left\n"\
 "						else {\n"\
-"							rightMSpd = Math.round(speed*2.55);\n"\
-"							leftMSpd = Math.round((speed - (2*angle*speed/90))*2.55);\n"\
+"							rightMSpd = Math.round(speed*maxSpeed);\n"\
+"							leftMSpd = Math.round((speed - (2*angle*speed/90))*maxSpeed);\n"\
 "							rightMCmd = \"RF-\" + rightMSpd;\n"\
 "							if(leftMSpd >= 0)leftMCmd = \"LF-\" + leftMSpd;\n"\
 "							if(leftMSpd < 0)leftMCmd = \"LB-\" + -leftMSpd;\n"\
@@ -471,16 +473,16 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "					if(dy < 0) {\n"\
 "						// Right\n"\
 "						if(dx < 0) {\n"\
-"							leftMSpd = Math.round(speed*2.55);\n"\
-"							rightMSpd = Math.round((speed - (2*angle*speed/90))*2.55);\n"\
+"							leftMSpd = Math.round(speed*maxSpeed);\n"\
+"							rightMSpd = Math.round((speed - (2*angle*speed/90))*maxSpeed);\n"\
 "							leftMCmd = \"LB-\" + leftMSpd;\n"\
 "							if(rightMSpd >= 0)rightMCmd = \"RB-\" + rightMSpd;\n"\
 "							if(rightMSpd < 0)rightMCmd = \"RF-\" + -rightMSpd;\n"\
 "						}\n"\
 "						// Left\n"\
 "						else {\n"\
-"							rightMSpd = Math.round(speed*2.55);\n"\
-"							leftMSpd = Math.round((speed - (2*angle*speed/90))*2.55);\n"\
+"							rightMSpd = Math.round(speed*maxSpeed);\n"\
+"							leftMSpd = Math.round((speed - (2*angle*speed/90))*maxSpeed);\n"\
 "							rightMCmd = \"RB-\" + rightMSpd;\n"\
 "							if(leftMSpd >= 0)leftMCmd = \"LB-\" + leftMSpd;\n"\
 "							if(leftMSpd < 0)leftMCmd = \"LF-\" + -leftMSpd;\n"\
@@ -490,7 +492,7 @@ static const char canvas_htm[] PROGMEM = "<html>\n"\
 "                }\n"\
 "				\n"\
 "				if(ret.localeCompare(lastPacket)!=0) {\n"\
-"					//connection.send(ret);\n"\
+"					connection.send(ret);\n"\
 "					lastPacket = ret;\n"\
 "				}\n"\
 "                return ret;\n"\
